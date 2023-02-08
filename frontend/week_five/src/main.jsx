@@ -7,8 +7,8 @@ import Routers from './routers/Router';
 import { AuthContext, AuthProvider } from './components/AuthContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <AuthProvider>
+  
       <App></App>
-    </AuthProvider>
+    
     
 )

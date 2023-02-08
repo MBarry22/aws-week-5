@@ -9,10 +9,15 @@ export default function Profile() {
   
   const onSubmit = async (e) => {
     e.preventDefault();
-    const result = await axios.put("/api/users/displayName", {displayName})
+    const result = await axios.put("/api/users/displayName", {displayName},{
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          }})
+          
     console.log(result.data)
     const token = result.data.token
-    window.localStorage.setItem("token", token)
+    localStorage.setItem("token", token)
   };
   return (
     <div>
