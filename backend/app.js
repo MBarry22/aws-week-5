@@ -16,16 +16,16 @@ function authorize(req, res, next) {
 
   if (!token) {
     console.error("no token sent to server")
-    res.status(401).send({error: "no token sent to server"})
-    return 
+    res.status(401).send({ error: "no token sent to server" })
+    return
   }
 
   let decoded
   try {
     decoded = jwt.verify(token, "shhhhh");
-  } catch(error) {
+  } catch (error) {
     console.error(error)
-    res.status(403).send({error: "Invalid Token"})
+    res.status(403).send({ error: "Invalid Token" })
     return
   }
 
@@ -34,107 +34,114 @@ function authorize(req, res, next) {
 }
 
 
-app.get('/api/:displayName', async (req,res) => {
-  const {email, password, displayName} = req.body
+app.get('/api/:displayName', async (req, res) => {
+  const { email, password, displayName } = req.body
   const user = await database.getUserWithDisplayName(displayName)
   console.log(displayName)
-  
-  res.send({status: "ok", displayName})
+
+  res.send({ status: "ok", displayName })
 
 })
 
 // Post Login
 app.post("/api/login", async (req, res) => {
   console.log("sign in", req.body)
-  const {email, password} = req.body
-  
+  const { email, password } = req.body
+
   // Get user from db 
   const user = await database.getUserWithEmail(email)
   console.log(user)
- // getting hashed password 
- 
+  // getting hashed password 
+
   const hashedPassword = user.password
   console.log(user.password)
   //comparing password to hashed password 
   const same = await bcrypt.compare(password, hashedPassword)
-  
-// if email or password are not valid send 400 Bad Request missing fields
-  if(!email || !password){
-   return  res.status(400).send({status: "error", message: "missing fields"})
+
+  // if email or password are not valid send 400 Bad Request missing fields
+  if (!email || !password) {
+    return res.status(400).send({ status: "error", message: "missing fields" })
   }
 
   // if passwords are not same send 400 Bad Request invalid password
- if (!same){
-  return res.status(400).send({status: "error", message: "invalid password"})
- }
- //JWT token
- const token = jwt.sign(
-  {
-    sub: user.id,
-    email: user.email,
-    displayName: user.displayName,
-    profileImage: user.profileImage,
-  },
-  //secret (if used in production obv change to a secure one)
-  "shhhhh",
-  {expiresIn: "10000000000000000s"}
-);
+  if (!same) {
+    return res.status(400).send({ status: "error", message: "invalid password" })
+  }
+  //JWT token
+  const token = jwt.sign(
+    {
+      sub: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      profileImage: user.profileImage,
+    },
+    //secret (if used in production obv change to a secure one)
+    "shhhhh",
+    { expiresIn: "10000000000000000s" }
+  );
 
-  res.send({status: "ok", token})
+  res.send({ status: "ok", token: token })
 })
 
 // Post Signup 
 app.post("/api/signup", async (req, res) => {
- 
-  const {email, password, displayName, profileImage} = req.body
+
+  const { email, password, displayName, profileImage } = req.body
   console.log("sign up", req.body)
-  
-// salt and hash password
+
+  // salt and hash password
   const salt = await bcrypt.genSalt(13)
   const hashedPassword = await bcrypt.hash(password, salt)
-  console.log("Hashed Pass",hashedPassword)
+  console.log("Hashed Pass", hashedPassword)
 
   // create user with hashed / salted password
-  const results = await database.createUser({email, password: hashedPassword, displayName, profileImage})
+  const results = await database.createUser({ email, password: hashedPassword, displayName, profileImage })
   console.log(results.profileImage)
-  res.send({status: "ok"})
+  res.send({ status: "ok" })
 })
 
 
 // Update Display Name
-app.put("/api/users/displayName", authorize, async  (req, res) => {
+app.put("/api/users/:id/displayName", authorize, async (req, res) => {
   // verify user is logged in 
+  const userId = req.params.id
+  console.log("userId", userId)
+  const { displayName } = req.body
+  let user = req.user
 
-  const {displayName, email} = req.body
-  const {sub} = req.user
 
- 
-  console.log("user Info Before:", req.user)
-  
   // update user display name in database
-  const result = await database.updateUserDisplayName(sub, displayName)
-  console.log("user Info After:", sub)
-  await database.getUserWithEmail(email);
-  console.log("update displayName", displayName, sub)
-  
+  await database.updateUserDisplayName(userId, displayName)
+  // await database.getUserWithEmail(email);
+  // console.log("update displayName", displayName, sub)
+
   const accessToken = generateToken({
-    sub: sub,
+    id: userId,
     email: user.email,
-    displayName: user.displayName,
+    displayName: displayName,
   });
-  res.send({status: "ok", accessToken: accessToken, result: result})
+
+  user = {
+    id: (Number)(userId),
+    email: user.email,
+    displayName: displayName,
+  }
+  console.log("user", user)
+
+  console.log("accessToken", accessToken)
+  res.send({ status: "ok", accessToken: accessToken, user: user, displayName: displayName })
 })
 
 // Update Profile Image 
 app.put("/api/users/:id/profileImage", async (req, res) => {
-  
+
   const userId = req.params.id
-  const {profileImage} = req.body
+  const { profileImage } = req.body
 
   await database.updateUserProfileImage(userId, profileImage)
-  
+
   console.log("update profile image", profileImage, userId)
-  res.send({status: "ok"})
+  res.send({ status: "ok" })
 })
 
 

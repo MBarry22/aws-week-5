@@ -6,34 +6,43 @@ import jwtDecode from "jwt-decode";
 import axios from "axios";
 
 export default function Profile() {
-  const { user, setToken,  } = useContext(AuthContext)
+  const { user, token, setToken, setUser } = useContext(AuthContext)
   const [displayName, setDisplayName] = useState(user.displayName);
-  
+
   const handleChangeName = async (e) => {
-    e.PreventDefault();
-    const result = await axios.put("api/users/displayName",{
-        displayName: displayName, email: user.email
+    e.preventDefault();
+    const result = await axios.put(`/api/users/${user.sub}/displayName`, {
+      displayName: displayName
     },
-    {headers: {
-        'Authorization': `Bearer ${localStorage.getItem("token")}`  
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`
         }
-    })
-    
-    if(result.data.status == "ok"){
-        console.log(result.data)
-        setToken(result.data.accessToken)
-    }
-    
+      })
+
+
+    console.log(result.data)
+    setToken(result.data.accessToken);
+    setDisplayName(result.data.displayName)
+    setUser(result.data.user)
   }
- 
-  
-  
+
+  console.log('user', user)
+  console.log('displayName', displayName)
+  console.log('token', token)
+
+
+
+
   return (
     <div>
       <h1>Profile</h1>
       <img src={user.profileImage}></img>
       <p>
         <span>Email:</span> {user.email}
+      </p>
+      <p>
+        <span>UserName:</span> {user.displayName}
       </p>
       <form onSubmit={handleChangeName}>
         <div>
