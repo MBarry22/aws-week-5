@@ -108,21 +108,21 @@ app.put("/api/users/displayName", authorize, async  (req, res) => {
   const {displayName, email} = req.body
   const {sub} = req.user
 
-  const userId = req.user.sub
+ 
   console.log("user Info Before:", req.user)
   
   // update user display name in database
-  await database.updateUserDisplayName(userId, displayName)
-  console.log("user Info After:", req.user)
+  const result = await database.updateUserDisplayName(sub, displayName)
+  console.log("user Info After:", sub)
   await database.getUserWithEmail(email);
-  console.log("update displayName", displayName, userId)
+  console.log("update displayName", displayName, sub)
   
   const accessToken = generateToken({
     sub: sub,
     email: user.email,
     displayName: user.displayName,
   });
-  res.send({status: "ok", accessToken: accessToken})
+  res.send({status: "ok", accessToken: accessToken, result: result})
 })
 
 // Update Profile Image 

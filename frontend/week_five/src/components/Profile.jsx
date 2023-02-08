@@ -9,7 +9,7 @@ export default function Profile() {
   const { user, setToken,  } = useContext(AuthContext)
   const [displayName, setDisplayName] = useState(user.displayName);
   
-  const onSubmit = async (e) => {
+  const handleChangeName = async (e) => {
     e.PreventDefault();
     const result = await axios.put("api/users/displayName",{
         displayName: displayName, email: user.email
@@ -21,7 +21,6 @@ export default function Profile() {
     
     if(result.data.status == "ok"){
         console.log(result.data)
-        
         setToken(result.data.accessToken)
     }
     
@@ -32,10 +31,11 @@ export default function Profile() {
   return (
     <div>
       <h1>Profile</h1>
+      <img src={user.profileImage}></img>
       <p>
         <span>Email:</span> {user.email}
       </p>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleChangeName}>
         <div>
           <label htmlFor="displayName">Display Name</label>
           <input
