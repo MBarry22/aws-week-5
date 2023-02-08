@@ -1,0 +1,72 @@
+form{
+    padding-top: 5rem;
+    
+    width: 100%;
+    input[type=email]{
+        
+        background-color: rgb(152, 46, 252);
+        width: 70%;
+        height: 30px;
+        border: 1px solid white;
+        border-radius: 20px;
+        text-align: center;
+        color: white;
+
+    }
+    input[type=email]::placeholder{
+        color: white;
+    }
+    input[type=password]{
+        background-color: rgb(152, 46, 252);
+        width: 70%;
+        height: 30px;
+        border: 1px solid white;
+        border-radius: 20px;
+        text-align: center;
+        color: white;
+    }
+    input[type=password]::placeholder{
+        color: white;
+    }
+    button{
+        background-color: rgb(152, 46, 252);
+        width: 40%;
+        height: 30px;
+        border: 1px solid white;
+        border-radius: 20px;
+        color: white;
+    }
+}
+.form-container{
+    height: 600px;
+    width: 400px;
+    background-color: #494949;
+    margin: 0 auto;
+    justify-content: center;
+    text-align: center;
+    border-radius: 20px;
+    
+}
+input[type=text]{
+    background-color: rgb(152, 46, 252);
+    width: 70%;
+    height: 30px;
+    border: 1px solid white;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+}
+input[type=text]::placeholder{
+    color: white;
+}
+.wrapper{
+    width: 100%;
+    height: 1000px;
+    background-color: black;
+    justify-content: center;
+    text-align: center;
+
+}
+h1{
+    padding-top: 40px;
+}

@@ -28,6 +28,14 @@ export async function getUserWithEmail(email) {
   return results[0]
 }
 
+export async function getUserWithDisplayName(displayName) {
+  const [results] = await pool.query(
+    `SELECT * FROM users WHERE id = ?`,
+    [displayName]
+  )
+  return results[0]
+}
+
 export async function updateUserDisplayName(id, displayName) {
   const [results] = await pool.query(
     `UPDATE users SET displayName = ? WHERE id = ?`,

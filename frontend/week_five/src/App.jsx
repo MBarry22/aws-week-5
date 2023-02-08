@@ -1,34 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+// App.js
+// App.js
+import { useState, useEffect } from "react";
+import jwtDecode from "jwt-decode";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import Home from "./components/Home";
+import Profile from "./components/Profile";
+import Navbar from "./components/Navbar";
+import { AuthContext, AuthProvider } from "./components/AuthContext";
 
-function App() {
-  const [count, setCount] = useState(0)
+
+export default function App() {
+  const [page, setPage] = useState("login");
+
+  
+  
+ 
+  function currentPage(){
+    switch (page){
+      case "login":
+        return <Login></Login>;
+      case "signup":
+        return <Signup></Signup>;
+      case "profile":
+        return <Profile></Profile>; 
+      case "home":
+        return <Home></Home>;  
+        default: 
+        return "Page Doesn't Exist Yet!";
+    }
+  }
+
+  function handlePageChange(page){
+    setPage(page)
+  }
+
+
 
   return (
+    <AuthProvider>
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Navbar onPageChange={handlePageChange}></Navbar>
+      {currentPage()}
     </div>
-  )
+    </AuthProvider>
+  );
 }
-
-export default App
