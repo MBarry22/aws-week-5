@@ -6,26 +6,30 @@ export const AuthContext = createContext();
 export function AuthProvider ({children}){
 
     const [token, setToken] = useState("");
-    const user = token && token.length ? jwtDecode(token) : null;
-
-  const updateToken = (token )=> {
-    localStorage.setItem("token", token)
-    setToken(token)
-  }
-  
-    useEffect(() =>{
-      // use effect code can cause side effects
-      // cann interact with the outside world
-      // will always run inside the browser
-  
-      const token = localStorage.getItem("token")
+    const [user, setUser] = useState("")
+    
+    const updateToken = (token )=> {
+      localStorage.setItem("token", token)
       setToken(token)
+    }
+        
+    
+    useEffect(() => {
+      const token = localStorage.getItem("token")
   
-      
-    }, [])
+      if(token){
+        const user = jwtDecode(token);
+        console.log(user);
+        
+        setUser(user);
+        
+      }
+    }, [token]);
+
+
 
     return(
-        <AuthContext.Provider value={{user, token, updateToken}}>
+        <AuthContext.Provider value={{user, token, updateToken, setUser}}>
           {children} 
         </AuthContext.Provider>
     )

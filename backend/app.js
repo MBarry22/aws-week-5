@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import * as database from '../backend/database.js'
 import jwt from 'jsonwebtoken'
 import cors from 'cors'
+import generateToken from './jwt.js'
 const app = express()
 app.use(express.json())
 app.use(cors())
@@ -103,20 +104,9 @@ app.post("/api/signup", async (req, res) => {
 // Update Display Name
 app.put("/api/users/displayName", authorize, async  (req, res) => {
   // verify user is logged in 
-  const token = jwt.sign(
-    {
-      sub: user.id,
-      email: user.email,
-      displayName: user.displayName,
-      profileImage: user.profileImage,
-    },
-    //secret (if used in production obv change to a secure one)
-    "shhhhh",
-    {expiresIn: "10000000000000000s"}
-  );
 
-
-  const {displayName} = req.body
+  const {displayName, email} = req.body
+  const {sub} = req.user
 
   const userId = req.user.sub
   console.log("user Info Before:", req.user)
@@ -124,10 +114,15 @@ app.put("/api/users/displayName", authorize, async  (req, res) => {
   // update user display name in database
   await database.updateUserDisplayName(userId, displayName)
   console.log("user Info After:", req.user)
+  await database.getUserWithEmail(email);
+  console.log("update displayName", displayName, userId)
   
-  //console.log("update displayName", displayName, userId)
-  
-  res.send({status: "ok", token: token})
+  const accessToken = generateToken({
+    sub: sub,
+    email: user.email,
+    displayName: user.displayName,
+  });
+  res.send({status: "ok", accessToken: accessToken})
 })
 
 // Update Profile Image 

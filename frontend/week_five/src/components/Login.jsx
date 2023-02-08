@@ -23,7 +23,9 @@ export default function Login() {
     console.log(result.data)
     const token = result.data.token
     localStorage.setItem("token", token)
+    
   };
+  
 
   return (
     <div className="wrapper">

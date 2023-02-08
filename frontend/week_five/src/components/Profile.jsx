@@ -1,24 +1,34 @@
 import { useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { useContext } from "react";
+import { useEffect } from "react";
+import jwtDecode from "jwt-decode";
 import axios from "axios";
 
 export default function Profile() {
-  const { user, updateToken } = useContext(AuthContext)
+  const { user, setToken,  } = useContext(AuthContext)
   const [displayName, setDisplayName] = useState(user.displayName);
   
   const onSubmit = async (e) => {
-    e.preventDefault();
-    const result = await axios.put("/api/users/displayName", {displayName},{
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          }})
-          
-    console.log(result.data)
-    const token = result.data.token
-    localStorage.setItem("token", token)
-  };
+    e.PreventDefault();
+    const result = await axios.put("api/users/displayName",{
+        displayName: displayName, email: user.email
+    },
+    {headers: {
+        'Authorization': `Bearer ${localStorage.getItem("token")}`  
+        }
+    })
+    
+    if(result.data.status == "ok"){
+        console.log(result.data)
+        
+        setToken(result.data.accessToken)
+    }
+    
+  }
+ 
+  
+  
   return (
     <div>
       <h1>Profile</h1>

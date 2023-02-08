@@ -5,8 +5,8 @@ import jwt from "jsonwebtoken"
 // 'my secret' is just for development
 const secret = process.env.ACCESS_TOKEN_SECRET || 'secret_key'
 
-function generateToken(data) {
+export default function generateToken(data) {
   const token = jwt.sign(data, secret, { expiresIn: "100000000000000000000000s" })
   return token
 }
-exports.generateToken = generateToken
+
